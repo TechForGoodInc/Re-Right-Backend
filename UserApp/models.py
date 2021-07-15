@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-# Create your models here.
+# manages user account.
 class MyAccountManager(BaseUserManager):
     def create_user(self, email, username, password=None):
         if not email:
@@ -35,6 +35,8 @@ class MyAccountManager(BaseUserManager):
         return user
 
 
+# User model which is overwritten by us because
+# django inbuilt User model has limited attributes.
 class User(AbstractBaseUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=30)
@@ -64,7 +66,7 @@ class User(AbstractBaseUser):
 
 
 
-
+# creates Tokens when new user is added.
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

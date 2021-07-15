@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
+
 from .serializers import RegistrationSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -8,6 +10,8 @@ from rest_framework.decorators import action
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+
+
 
 
 
@@ -33,7 +37,7 @@ class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     http_method_names = ['get','put','delete']
-
+    permission_classes = [IsAuthenticated]
     @action(detail=True, methods=['PUT'])
     # this method is for updating user related details.
     def update_user(self, request, pk=None):
