@@ -1,3 +1,5 @@
-venv/
-re_right/__pycache__/
-.idea/
+venv/*
+.idea/*
+UserApp/migrations/*
+re_right/__pycache__/*
+UserApp/__pycache__/*
