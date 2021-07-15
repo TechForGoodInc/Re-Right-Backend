@@ -2,3 +2,4 @@ venv/
 .idea/*
 UserApp/migrations/*
 re_right/__pycache__/
+.idea/
