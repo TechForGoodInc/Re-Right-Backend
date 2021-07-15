@@ -1,1 +1,6 @@
 venv/
+.idea/*
+re_right/__pycache__/*
+UserApp/__pycache__/*
+UserApp/migrations/*
+
