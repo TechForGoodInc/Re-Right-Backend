@@ -13,7 +13,10 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    command: 'python manage.py runserver 172.18.1.4:8000'
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 172.18.1.4:8000"
     restart: always
     ports:
       - 8000:8000
