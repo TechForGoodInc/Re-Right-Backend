@@ -10,22 +10,53 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .models import Post
 from .serializers import PostSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 # Create your views here.
 
-posts = [
-    {'title': 'My First Post',
-     'body': 'just my first post, hi!',
-     'date_created': 'July 16, 2021',
-     'author': 'Mary Sue',
-     'no_of_likes': 0,
-     'no_of_comments': 0}
-]
-class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    http_method_names = ['get', 'put', 'delete']
-    permission_classes = [IsAuthenticated]
 
 
-def post_creation(request):
-    return HttpResponse('<h1> Post Creation Page </h1>')
+@api_view(['GET'])
+def post_overview(request):
+    api_urls = {
+        'List': '/post-list/',
+        'Detail': '/post-detail/<str:pk>/',
+        'Create': '/post-creation/',
+        'Edit': '/post-edit/<str:pk>/',
+        'Delete': '/post-delete/<str:pk>/',
+    }
+    return Response(api_urls)
+
+@api_view(['GET'])
+def post_list(request):
+    posts = Post.objects.all()
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def post_detail(request, pk):
+    post = Post.objects.get(id=pk)
+    serializer = PostSerializer(post, many=False)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def post_create(request):
+    serializer = PostSerializer(data = request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def post_edit(request, pk):
+    post = Post.objects.get(id=pk)
+    serializer = PostSerializer(instance = post, data = request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+def post_delete(request, pk):
+    post = Post.objects.get(id=pk)
+    post.delete()
+    return Response("Post Deleted")
+
