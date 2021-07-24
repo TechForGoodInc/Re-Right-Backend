@@ -22,5 +22,4 @@ urlpatterns = [
     path('auth/', CustomAuthToken.as_view()),
     path('uapi/', include('UserApp.urls')),
     path('papi/', include('PostApp.urls')),
-    path('rapi/', include('ReportApp.urls'))
 ]
