@@ -71,5 +71,5 @@ class CustomAuthToken(ObtainAuthToken):
             return Response({"chk_uname_or_pwd": "Please check your Password"},
                             status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({"user_not_found": "User does not exixts with this email address"},
+            return Response({"user_not_found": "User does not exists with this email address"},
                             status=status.HTTP_404_NOT_FOUND)

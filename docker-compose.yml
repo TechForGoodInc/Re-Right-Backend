@@ -12,7 +12,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
+#      to run migrations within the code(not externally).
     command: >
       sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
