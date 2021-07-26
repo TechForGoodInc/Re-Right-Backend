@@ -66,6 +66,44 @@ class PostViewSet(viewsets.ModelViewSet):
     def put(self, request, pk, *args, **kwargs):
         return self.update(request, pk, *args, **kwargs)
 
+    #this should create an object on the Post table with the title, body, tags, and author
+    @action(detail=True, methods=['POST'])
+    def createPost(self, request):
+        user = request.user
+        try:
+            posts = Post.objects.create(author = user, title = input("Please enter title here"), body = input("please enter body here"))
+        except:
+            return Response({'message': "Please enter all fields correctly"})
+        serializer = PostSerializer(posts, many = False)
+        response = {'message': "Post Created", 'result': serializer.data}
+        return Response(response, status = status.HTTP_200_OK)
+
+    #should delete post based on id and user verification
+    @action(detail=True, methods=['DELETE'])
+    def deletePost(self, request, pk=None):
+        user = request.user
+        try:
+            posts = Post.objects.get(user = user, id = pk)
+            posts.delete()
+        except Exception:
+            return Response({'message': "This post does not exist or you cannot delete this post"})
+        response = {'message': 'Selected post has been deleted'}
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+    #should allow editing of the post based on user and id
+    @action(detail=True, methods=['POST'])
+    def editPost(self, request, pk=None):
+        user = request.user
+        try:
+            posts = Post.objects.get(user = user, id = pk)
+            serializer = PostSerializer(instance = post, data = request.data)
+            if serializer.is_valid():
+                serializer.save()
+        except Exception:
+            return Response({'message': "This post does not exist or you cannot edit this post"})
+        response = {"message": "Successfully edited post"}
+        return Response(response, status=status.HTTP_200_OK)
+
     # this will create the object in Like table for
     # respective post and user,who has liked the post.
     @action(detail=True, methods=['POST'])
