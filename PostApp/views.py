@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Post,Like
-from .serializers import PostSerializer,LikeSerializer
+from .models import Post,Like, Comment
+from .serializers import PostSerializer,LikeSerializer, CommentSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -96,7 +96,7 @@ class PostViewSet(viewsets.ModelViewSet):
         user = request.user
         try:
             posts = Post.objects.get(user = user, id = pk)
-            serializer = PostSerializer(instance = post, data = request.data)
+            serializer = PostSerializer(instance = posts, data = request.data)
             if serializer.is_valid():
                 serializer.save()
         except Exception:
@@ -132,11 +132,46 @@ class PostViewSet(viewsets.ModelViewSet):
         response = {'message': 'Disliked Post so deleted'}
         return Response(response, status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=True, methods=['POST'])
+    def addComment(self, request, pk=None):
+        post = Post.objects.get(id=pk)
+        user = request.user
+        try:
+            comments = Comment.objects.create(author = user, body = input("Please enter body here"))
+        except:
+            return Response({'message': "Please enter all fields correctly"})
+        serializer = CommentSerializer(comments, many=False)
+        response = {'message': "Comment Added", 'result': serializer.data}
+        return Response(response, status = status.HTTP_200_OK)
+
+    @action(detail=True, methods=['DELETE'])
+    def deleteComment(selfself, request, pk=None):
+        post = Post.objects.get(id=pk)
+        user = request.user
+        try:
+            comments = Comment.objects.get(user=user, post=post)
+            comments.delete()
+        except Exception:
+            return Response({'message': "This comment does not exist or you cannot delete this comment"})
+        response = {'message': 'Comment has been deleted'}
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 # queryset : set of all like objects
 # serializer_class : present them in a way mentioned in serializers.py
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+    http_method_names = ['get']
+    permission_classes = [IsAuthenticated]
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    http_method_names = ['get']
+    permission_classes = [IsAuthenticated]
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
     http_method_names = ['get']
     permission_classes = [IsAuthenticated]
