@@ -3,6 +3,7 @@ from UserApp.models import User
 from django.utils import timezone
 # Create your models here.
 import datetime
+from django.utils.translation import gettext_lazy as _
 
 class Post(models.Model):
 
